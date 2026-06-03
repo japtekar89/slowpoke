@@ -6,15 +6,9 @@
 #' @importFrom stringr str_detect str_to_title
 #' @export
 find_poke <- function(poke_name) {
-  dat <- load_data()
-
-  poke_name <- str_to_title(poke_name)
-
-  dat |>
-    filter(str_detect(name, poke_name)) |>
-    select(name, flavorText) |>
-    distinct()
-
+  dat<- load_data()
+  results<- lapply(poke_names, find_poke, dat=dat)
+  dplyr::bind_rows(results)
 }
 
 #' Find multiple Pokémon by name patterns
@@ -23,17 +17,7 @@ find_poke <- function(poke_name) {
 #' @return A tibble of matching Pokémon card names and flavor text.
 #' @export
 find_many_pokes <- function(poke_names) {
-
-  result <- dplyr::tibble()
-
-  for (poke_name in poke_names) {
-
-    temp <- find_poke(poke_name)
-
-    result <- rbind(result, temp)
-
-  }
-
-  return(result)
+  results <- lapply(poke_names, find_poke)
+  dplyr::bind_rows(results)
 
 }
